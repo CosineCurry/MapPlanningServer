@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.demo.common.dao.ForumMapper" >
+    <resultMap id="BaseResultMap" type="com.demo.common.domain.Forum" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="user_id" property="userId" jdbcType="INTEGER" />
+        <result column="user_name" property="userName" jdbcType="VARCHAR" />
+        <result column="user_type" property="userType" jdbcType="VARCHAR"/>
+        <result column="title" property="title" jdbcType="VARCHAR"/>
+        <result column="detail" property="detail" jdbcType="VARCHAR"/>
+        <result column="comment_amount" property="commentAmount" jdbcType="INTEGER"/>
+        <result column="like_amount" property="likeAmount" jdbcType="INTEGER"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+        <result column="state" property="state" jdbcType="INTEGER" />
+        <result column="type" property="type" jdbcType="INTEGER"/>
+        <result column="imgs_host" property="imgsHost" jdbcType="VARCHAR"/>
+        <result column="pic_amount" property="picAmount" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <resultMap id="LikeResultMap" type="com.demo.common.domain.ForumLike">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="forum_id" property="forumId" jdbcType="INTEGER"/>
+        <result column="user_id" property="userId" jdbcType="INTEGER"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <resultMap id="CommentResultMap" type="com.demo.common.domain.ForumComment">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="forum_id" property="forumId" jdbcType="INTEGER"/>
+        <result column="from_user_id" property="fromUserId" jdbcType="INTEGER"/>
+        <result column="from_user_name" property="fromUserName" jdbcType="VARCHAR"/>
+        <result column="user_id" property="userId" jdbcType="INTEGER"/>
+        <result column="user_name" property="userName" jdbcType="VARCHAR"/>
+        <result column="user_type" property="userType" jdbcType="INTEGER"/>
+        <result column="data" property="data" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <insert id="insertForum" parameterType="com.demo.common.domain.Forum">
+        <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into forum (user_id, user_name, user_type, title, detail, comment_amount, like_amount, imgs_host, pic_amount, create_time, update_time, state, type)
+        values (#{userId}, #{userName}, #{userType}, #{title}, #{detail}, #{commentAmount}, #{likeAmount}, #{imgsHost}, #{picAmount}, #{createTime}, #{updateTime}, #{state}, #{type})
+    </insert>
+
+    <select id="selectForum" resultMap="BaseResultMap">
+        SELECT * FROM  forum WHERE state = 1 ORDER BY id DESC
+    </select>
+
+    <select id="selectForumByForumId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT * FROM forum WHERE id = #{id} AND state = 1
+    </select>
+
+    <select id="selectForumByUserId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT * FROM forum WHERE user_id = #{userId} AND state = 1 ORDER BY id DESC
+    </select>
+
+    <update id="updateForumByForum" parameterType="com.demo.common.domain.Forum">
+        UPDATE forum
+        <set>
+            comment_amount = #{commentAmount},
+            like_amount = #{likeAmount},
+            state = #{state}
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <insert id="insertForumLike" parameterType="com.demo.common.domain.ForumLike">
+        <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        INSERT INTO forum_user_like (forum_id, user_id, create_time)
+        VALUES (#{forumId}, #{userId}, #{createTime})
+    </insert>
+
+    <select id="selectForumLikeByForum" parameterType="java.util.Map" resultMap="LikeResultMap">
+        SELECT * FROM forum_user_like WHERE forum_id = #{forumId} AND user_id = #{userId}
+    </select>
+
+    <select id="selectForumLikeByForumId" parameterType="java.lang.Integer" resultMap="LikeResultMap">
+        SELECT * FROM  forum_user_like WHERE forum_id = #{forumId} AND state = 1
+    </select>
+
+    <delete id="deleteForumLikeByForum" parameterType="java.util.Map">
+        DELETE FROM forum_user_like WHERE forum_id = #{forumId} AND user_id = #{userId}
+    </delete>
+
+    <insert id="insertForumComment" parameterType="com.demo.common.domain.ForumComment">
+        <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into forum_user_comment (forum_id, from_user_id, from_user_name, user_Id, user_name, user_type, data, create_time)
+        VALUES (#{forumId}, #{fromUserId}, #{fromUserName}, #{userId}, #{userName}, #{userType}, #{data}, #{createTime})
+    </insert>
+
+    <select id="selectForumCommentByForum" parameterType="java.lang.Integer" resultMap="CommentResultMap">
+        SELECT * FROM forum_user_comment WHERE forum_id = #{forumId} ORDER BY id DESC
+    </select>
+
+    <select id="selectForumCommentByUserId" parameterType="java.lang.Integer" resultMap="CommentResultMap">
+        SELECT * FROM forum_user_comment WHERE from_user_id = #{userId} OR forum_id IN (SELECT id FROM forum WHERE user_id = #{userId}) ORDER BY id DESC limit 10
+    </select>
+
+    <delete id="deleteForumComment" parameterType="java.util.Map">
+        DELETE FROM forum_user_comment WHERE id = #{id} AND forum_id = #{forumId} AND user_id = #{userId}
+    </delete>
+
+</mapper>

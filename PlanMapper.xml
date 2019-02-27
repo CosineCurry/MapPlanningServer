@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.demo.common.dao.PlanMapper" >
+    <resultMap id="PlanResultMap" type="com.demo.common.domain.Plan" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="plan_name" property="planName" jdbcType="VARCHAR" />
+        <result column="plan_comment" property="planComment" jdbcType="VARCHAR" />
+        <result column="plan_city" property="planCity" jdbcType="VARCHAR" />
+        <result column="plan_address" property="planAddress" jdbcType="VARCHAR" />
+        <result column="plan_center" property="planCenter"/>
+        <result column="plan_type" property="planType" jdbcType="INTEGER" />
+        <result column="plan_style" property="planStyle" jdbcType="VARCHAR"/>
+        <result column="plan_range" property="planRange" jdbcType="VARCHAR" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="state" property="state" jdbcType="INTEGER" />
+        <result column="plan_img" property="planImg" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <resultMap id="DetailResultMap" type="com.demo.common.domain.PlanDetail" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="plan_id" property="planId" jdbcType="INTEGER" />
+        <result column="user_id" property="userId" jdbcType="INTEGER" />
+        <result column="plan_data" property="planData" jdbcType="VARCHAR" />
+        <result column="plan_comment" property="planComment" jdbcType="VARCHAR"></result>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="state" property="state" jdbcType="INTEGER" />
+    </resultMap>
+
+    <insert id="insertPlan" parameterType="com.demo.common.domain.Plan" >
+        <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into plan (plan_name, plan_comment, plan_city, plan_address, plan_center, plan_type, plan_style, plan_range,
+        create_time, state, plan_img)
+        values (#{planName,jdbcType=VARCHAR},
+        #{planComment,jdbcType=VARCHAR}, #{planCity,jdbcType=VARCHAR}, #{planAddress,jdbcType=VARCHAR}, #{planCenter},
+        #{planType,jdbcType=INTEGER}, #{planStyle,jdbcType=VARCHAR},  #{planRange,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{state,jdbcType=INTEGER}, #{planImg, jdbcType=VARCHAR})
+    </insert>
+
+    <update id="updatePlan" parameterType="com.demo.common.domain.Plan">
+        update plan
+        <set>
+            plan_name = #{planName, jdbcType=VARCHAR},
+            plan_comment = #{planComment, jdbcType=VARCHAR},
+            plan_city = #{planCity, jdbcType=VARCHAR},
+            plan_address = #{planAddress, jdbcType=VARCHAR},
+            plan_center = #{planCenter},
+            plan_type = #{planType, jdbcType=INTEGER},
+            plan_style = #{planStyle, jdbcType=VARCHAR},
+            plan_range = #{planRange, jdbcType=VARCHAR},
+            plan_img = #{planImg, jdbcType=VARCHAR},
+            create_time = #{createTime, jdbcType=TIMESTAMP},
+            state = #{state, jdbcType=INTEGER}
+        </set>
+        where id = #{id, jdbcType=INTEGER}
+    </update>
+
+    <select id="selectAllPlan" resultMap="PlanResultMap">
+        select * from plan where state = 1 order by id desc limit 0,100
+    </select>
+
+    <select id="selectCompletePlan" resultMap="PlanResultMap">
+        SELECT * FROM plan WHERE state = 2 ORDER BY id DESC
+    </select>
+
+    <select id="selectPlanById" resultMap="PlanResultMap" parameterType="java.lang.Integer">
+        select * from plan where id = #{id, jdbcType=INTEGER} and state != 0
+    </select>
+
+    <insert id="insertPlanDetail" parameterType="com.demo.common.domain.PlanDetail" >
+        <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into plan_detail (plan_id, user_id, plan_data, plan_comment,
+        create_time, state)
+        values (#{planId,jdbcType=INTEGER},
+        #{userId,jdbcType=INTEGER}, #{planData,jdbcType=VARCHAR}, #{planComment,jdbcType=VARCHAR},
+        #{createTime,jdbcType=TIMESTAMP}, #{state,jdbcType=INTEGER})
+    </insert>
+
+    <select id="selectPlanDetailByPlanId" parameterType="java.lang.Integer" resultMap="DetailResultMap">
+        select * from plan_detail where plan_id = #{planId, jdbcType=INTEGER} order by id desc
+    </select>
+
+    <select id="selectPlanDetailById" parameterType="java.lang.Integer" resultMap="DetailResultMap">
+        select * from plan_detail where id = #{planId, jdbcType=INTEGER}
+    </select>
+
+    <update id="updatePlanDetailStateById">
+        update plan_detail
+        <set>
+            state = #{state, jdbcType=INTEGER}
+        </set>
+        where id = #{id, jdbcType=INTEGER}
+    </update>
+
+    <select id="selectPlanDetailByUserId" parameterType="java.lang.Integer" resultMap="DetailResultMap">
+        select * from plan_detail where user_id = #{userId, jdbcType=INTEGER}
+    </select>
+
+    <select id="selectPlanDetailByStateNoPass" resultMap="DetailResultMap">
+        SELECT * FROM plan_detail where state = 0 OR state = 2 ORDER BY id DESC
+    </select>
+
+</mapper>

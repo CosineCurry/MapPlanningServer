@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.demo.common.dao.NewsMapper" >
+    <resultMap id="NewsResultMap" type="com.demo.common.domain.News" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="title" property="title" jdbcType="VARCHAR" />
+        <result column="data" property="data" jdbcType="VARCHAR" />
+        <result column="images" property="images" jdbcType="VARCHAR" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+        <result column="access" property="access" jdbcType="INTEGER" />
+        <result column="state" property="state" jdbcType="INTEGER" />
+        <result column="type" property="type" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <resultMap id="NewsIDResultMap" type="com.demo.common.domain.NewsList" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="title" property="title" jdbcType="VARCHAR" />
+        <result column="access" property="access" jdbcType="INTEGER" />
+        <result column="images" property="images" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+        <result column="state" property="state" jdbcType="INTEGER" />
+        <result column="type" property="type" jdbcType="INTEGER" />
+    </resultMap>
+
+    <insert id="insertNews" parameterType="com.demo.common.domain.News">
+        <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into news (title, data, images, access, create_time, update_time, type, state)
+        values (#{title,jdbcType=VARCHAR},
+         #{data,jdbcType=VARCHAR}, #{images,jdbcType=VARCHAR},
+        #{access,jdbcType=INTEGER},  #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{type, jdbcType=INTEGER}, #{state,jdbcType=INTEGER})
+    </insert>
+
+    <select id="selectAllNews" resultMap="NewsResultMap">
+        select * from news where state = 1 order by id desc
+    </select>
+
+    <select id="selectAllNewsID" resultMap="NewsIDResultMap">
+        select * from news where state = 1 order by id desc
+    </select>
+
+    <select id="selectAllNewsIDByType" resultMap="NewsIDResultMap">
+        SELECT * FROM news WHERE state = 1 ORDER BY type DESC
+    </select>
+
+    <select id="selectAllNewsIDByTime" resultMap="NewsIDResultMap">
+        SELECT * FROM news WHERE state = 1 ORDER BY update_time DESC
+    </select>
+    
+    <select id="selectNewsLikeTitle" parameterType="java.lang.String" resultMap="NewsIDResultMap">
+        SELECT * FROM news WHERE state = 1 AND title like CONCAT('%',#{title, jdbcType=VARCHAR},'%') ORDER BY id DESC
+    </select>
+
+    <select id="selectNewsByID" resultMap="NewsResultMap" parameterType="java.lang.Integer">
+        select * from news where state = 1 and id = #{id, jdbcType=INTEGER} order by id desc
+    </select>
+
+    <select id="selectNewsByType" resultMap="NewsIDResultMap" parameterType="java.lang.Integer">
+        SELECT * FROM news WHERE type = #{type, jdbcType=INTEGER} and state = 1 ORDER BY id DESC
+    </select>
+
+    <update id="updateNewsAccessByID" parameterType="com.demo.common.domain.News">
+        update news
+        <set>
+            access = #{access, jdbcType=INTEGER}
+        </set>
+        where id = #{id, jdbcType=INTEGER}
+    </update>
+
+    <update id="updateNewsByID" parameterType="com.demo.common.domain.News">
+        UPDATE news
+        <set>
+            title = #{title, jdbcType=VARCHAR},
+            data = #{data, jdbcType=VARCHAR},
+            <if test="images != null">
+                images = #{images, jdbcType=VARCHAR},
+            </if>
+            update_time = #{updateTime, jdbcType=TIMESTAMP},
+            type = #{type, jdbcType=INTEGER},
+            state = #{state, jdbcType=INTEGER}
+        </set>
+        WHERE id = #{id, jdbcType=INTEGER}
+    </update>
+
+</mapper>

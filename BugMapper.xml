@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.demo.common.dao.BugMapper" >
+    <resultMap id="BaseResultMap" type="com.demo.common.domain.Bug">
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="user_id" property="userId" jdbcType="INTEGER"/>
+        <result column="bug_type" property="bugType" jdbcType="INTEGER"/>
+        <result column="address" property="address" jdbcType="VARCHAR"/>
+        <result column="coordinate" property="coordinate" jdbcType="VARCHAR"/>
+        <result column="imgs_url" property="imgsUrl" jdbcType="VARCHAR"/>
+        <result column="pic_count" property="picCount" jdbcType="INTEGER"/>
+        <result column="bug_detail" property="bugDetail" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="state" property="state" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <insert id="insertBug" parameterType="com.demo.common.domain.Bug">
+        <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into bug (user_id, bug_type, address, coordinate, imgs_url, pic_count, bug_detail, create_time, state)
+        values (#{userId,jdbcType=INTEGER},
+        #{bugType,jdbcType=INTEGER}, #{address,jdbcType=VARCHAR}, #{coordinate,jdbcType=VARCHAR},
+        #{imgsUrl,jdbcType=VARCHAR}, #{picCount,jdbcType=INTEGER},  #{bugDetail,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{state,jdbcType=INTEGER})
+    </insert>
+
+    <select id="selectAllBug" resultMap="BaseResultMap">
+        SELECT * FROM bug WHERE state = 1 order by id desc
+    </select>
+
+    <select id="selectBugById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        SELECT * FROM bug WHERE id = #{id, jdbcType=INTEGER} and state = 1
+    </select>
+
+
+</mapper>

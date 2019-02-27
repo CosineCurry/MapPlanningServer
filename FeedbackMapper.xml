@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.demo.common.dao.FeedbackMapper" >
+    <resultMap id="BaseResultMap" type="com.demo.common.domain.Feedback" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="complete_id" property="completeId" jdbcType="INTEGER" />
+        <result column="user_id" property="userId" jdbcType="INTEGER" />
+        <result column="feed_data" property="feedData" jdbcType="VARCHAR" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+        <result column="back_data" property="backData" jdbcType="VARCHAR"/>
+        <result column="admin_id" property="adminId" jdbcType="INTEGER" />
+        <result column="state" property="state" jdbcType="INTEGER" />
+    </resultMap>
+
+    <insert id="insertFeedback" parameterType="com.demo.common.domain.Feedback">
+        <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into feedback (complete_id, user_id, feed_data, create_time, update_time, back_data, admin_id, state)
+        values (#{completeId}, #{userId}, #{feedData}, #{createTime}, #{updateTime}, #{backData}, #{adminId}, #{state})
+    </insert>
+
+    <select id="selectAllFeedback" resultMap="BaseResultMap">
+        SELECT * FROM feedback ORDER BY id DESC
+    </select>
+
+    <select id="selectFeedbackByCompleteId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT * FROM feedback WHERE complete_id = #{completeId} ORDER BY id DESC
+    </select>
+
+    <select id="selectFeedbackByUserId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT * FROM feedback WHERE user_id = #{userId} ORDER BY id DESC
+    </select>
+
+    <select id="selectFeedbackById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT * FROM feedback WHERE id = #{id}
+    </select>
+
+    <update id="updateFeedback" parameterType="com.demo.common.domain.Feedback">
+        UPDATE feedback
+        <set>
+            update_time = #{updateTime},
+            admin_id = #{adminId},
+            back_data = #{backData},
+            state = #{state}
+        </set>
+        WHERE id = #{id}
+    </update>
+
+</mapper>

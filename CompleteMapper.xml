@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.demo.common.dao.CompleteMapper" >
+    <resultMap id="BaseResultMap" type="com.demo.common.domain.Complete" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="plan_id" property="planId" jdbcType="VARCHAR" />
+        <result column="plan_name" property="planName" jdbcType="VARCHAR"/>
+        <result column="plan_address" property="planAddress" jdbcType="VARCHAR"/>
+        <result column="data" property="data" jdbcType="VARCHAR" />
+        <result column="imgs" property="imgs" jdbcType="VARCHAR" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+        <result column="state" property="state" jdbcType="INTEGER" />
+        <result column="north_longitude" property="northLongitude" jdbcType="VARCHAR"/>
+        <result column="north_latitude" property="northLatitude" jdbcType="VARCHAR"/>
+        <result column="south_longitude" property="southLongitude" jdbcType="VARCHAR"/>
+        <result column="south_latitude" property="southLatitude" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <insert id="insertComplete" parameterType="com.demo.common.domain.Complete">
+        <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into complete (plan_id, plan_name, plan_address, imgs, data, create_time, update_time, state, north_latitude, north_longitude, south_latitude, south_longitude)
+        values (#{planId, jdbcType=INTEGER}, #{planName,jdbcType=VARCHAR}, #{planAddress,jdbcType=VARCHAR}, #{imgs, jdbcType=VARCHAR}, #{data, jdbcType=VARCHAR},  #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{state,jdbcType=INTEGER},
+        #{northLatitude, jdbcType=VARCHAR}, #{northLongitude, jdbcType=VARCHAR}, #{southLatitude, jdbcType=VARCHAR}, #{southLongitude, jdbcType=VARCHAR})
+    </insert>
+
+    <select id="selectCompleteByPlanId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT * FROM complete WHERE plan_id = #{planId, jdbcType=INTEGER} AND state = 1
+    </select>
+
+    <select id="selectCompleteById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT * FROM complete WHERE id = #{id} AND state = 1
+    </select>
+
+    <update id="updateComplete" parameterType="com.demo.common.domain.Complete">
+        UPDATE complete
+        <set>
+            <if test="imgs != null">
+                imgs = #{imgs, jdbcType=VARCHAR},
+            </if>
+            north_latitude = #{northLatitude, jdbcType=VARCHAR},
+            north_longitude = #{northLongitude, jdbcType=VARCHAR},
+            south_latitude = #{southLatitude, jdbcType=VARCHAR},
+            south_longitude = #{southLongitude, jdbcType=VARCHAR},
+            data = #{data, jdbcType=VARCHAR},
+            update_time = #{updateTime, jdbcType=TIMESTAMP},
+            state = #{state, jdbcType=INTEGER}
+        </set>
+        WHERE plan_id = #{planId, jdbcType=INTEGER}
+    </update>
+
+</mapper>

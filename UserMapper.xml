@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.demo.common.dao.UserMapper" >
+    <resultMap id="BaseResultMap" type="com.demo.common.domain.User" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="user_name" property="userName" jdbcType="VARCHAR" />
+        <result column="mobile_phone" property="mobilePhone" jdbcType="VARCHAR" />
+        <result column="password" property="password" jdbcType="VARCHAR" />
+        <result column="address" property="address" jdbcType="VARCHAR" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+        <result column="state" property="state" jdbcType="INTEGER" />
+        <result column="type" property="type" jdbcType="INTEGER" />
+        <result column="level" property="level" jdbcType="INTEGER" />
+        <result column="level_rate" property="levelRate" jdbcType="INTEGER" />
+    </resultMap>
+
+    <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.demo.common.domain.User" >
+        select
+        id, user_name, mobile_phone, password, address, create_time, update_time, state, type, level, level_rate
+        from user
+        where state = 1
+        <if test="userName != null" >
+            and user_name = #{userName,jdbcType=VARCHAR}
+        </if>
+        <if test="mobilePhone != null" >
+            and mobile_phone = #{mobilePhone,jdbcType=VARCHAR}
+        </if>
+    </select>
+
+    <insert id="insertUser" parameterType="com.demo.common.domain.User" >
+        <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into user (user_name, mobile_phone, address,
+        password, create_time, update_time,
+        state, type, level, level_rate
+        )
+        values (#{userName,jdbcType=VARCHAR}, #{mobilePhone,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR},
+        #{password,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP},
+        #{state,jdbcType=INTEGER}, #{type,jdbcType=INTEGER}, #{level,jdbcType=INTEGER},#{levelRate,jdbcType=INTEGER}
+        )
+    </insert>
+
+    <select id="selectByMobilePhone" resultMap="BaseResultMap" parameterType="String">
+        select * from user where mobile_phone = #{mobilePhone,jdbcType=VARCHAR} and state = 1
+    </select>
+
+    <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select * from user where id = #{id, jdbcType=INTEGER}
+    </select>
+
+    <select id="selectAllUser" resultMap="BaseResultMap">
+        select * from user;
+    </select>
+
+    <update id="updateUser" parameterType="com.demo.common.domain.User">
+        UPDATE user
+        <set>
+            user_name = #{userName,jdbcType=VARCHAR},
+            address = #{address,jdbcType=VARCHAR},
+            type = #{type, jdbcType=INTEGER},
+            state = #{state, jdbcType=INTEGER}
+        </set>
+        WHERE id = #{id, jdbcType=INTEGER}
+    </update>
+
+</mapper>

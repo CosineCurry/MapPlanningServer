@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.demo.common.dao.QuestionMapper" >
+    <resultMap id="QuestionResultMap" type="com.demo.common.domain.Question" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="title" property="title" jdbcType="VARCHAR" />
+        <result column="url" property="url" jdbcType="VARCHAR" />
+        <result column="state" property="state" jdbcType="INTEGER" />
+    </resultMap>
+
+    <select id="selectAllQuestion" resultMap="QuestionResultMap">
+        select * from question where state = 1 order by id desc
+    </select>
+
+    <insert id="insertQuestion" parameterType="com.demo.common.domain.User">
+        <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into question (title, url, state)
+        values (#{title,jdbcType=VARCHAR},
+        #{url,jdbcType=VARCHAR}, #{state,jdbcType=INTEGER})
+    </insert>
+
+    <select id="selectQuestionById" resultMap="QuestionResultMap" parameterType="java.lang.Integer">
+        SELECT * FROM question WHERE id = #{id, jdbcType=INTEGER} and state = 1
+    </select>
+
+    <update id="updateQuestionById" parameterType="com.demo.common.domain.Question">
+        UPDATE question
+        <set>
+            title = #{title, jdbcType=VARCHAR},
+            url = #{url, jdbcType=VARCHAR},
+            state = #{state, jdbcType=INTEGER}
+        </set>
+        WHERE id = #{id, jdbcType=INTEGER}
+    </update>
+
+    <select id="selectQuestionByTitle" resultMap="QuestionResultMap" parameterType="java.lang.String">
+        select * from question where title = #{title, jdbcType=VARCHAR};
+    </select>
+
+</mapper>

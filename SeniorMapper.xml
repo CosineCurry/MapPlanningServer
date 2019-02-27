@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.demo.common.dao.SeniorMapper" >
+    <resultMap id="BaseResultMap" type="com.demo.common.domain.Senior" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="temperature_id" property="temperatureId" jdbcType="INTEGER"/>
+        <result column="humidity_id" property="humidityId" jdbcType="INTEGER"/>
+        <result column="dust_id" property="dustId" jdbcType="INTEGER"/>
+        <result column="noise_id" property="noiseId" jdbcType="INTEGER"/>
+        <result column="temperature" property="temperature" jdbcType="VARCHAR" />
+        <result column="humidity" property="humidity" jdbcType="VARCHAR"/>
+        <result column="dust" property="dust" jdbcType="VARCHAR"/>
+        <result column="noise" property="noise" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="VARCHAR"/>
+        <result column="rate" property="rate" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <insert id="insertSenior" parameterType="com.demo.common.domain.Senior">
+        <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into sensor (temperature_id, humidity_id, dust_id, noise_id, temperature, humidity, dust,
+        noise, create_time, rate)
+        values (#{temperatureId,jdbcType=INTEGER}, #{humidityId,jdbcType=INTEGER}, #{dustId,jdbcType=INTEGER},
+        #{noiseId,jdbcType=INTEGER}, #{temperature,jdbcType=VARCHAR}, #{humidity,jdbcType=VARCHAR}, #{dust,jdbcType=VARCHAR},
+        #{noise,jdbcType=VARCHAR},  #{createTime,jdbcType=VARCHAR},  #{rate,jdbcType=INTEGER})
+    </insert>
+
+</mapper>
